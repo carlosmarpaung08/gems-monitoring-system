@@ -12,8 +12,14 @@ class ProjectController extends Controller
 {
     public function index()
     {
-        // Mengambil semua data project beserta relasinya
-        $projects = Project::with(['workPackages.boqs.progressEntries'])->get();
+        $projects = Project::with([
+            'workPackages' => function ($q) {
+                $q->withCount('boqs');
+            },
+            'workPackages.boqs.progressEntries'
+        ])
+        ->withCount('workPackages')
+        ->get();
 
         foreach ($projects as $project) {
             $projectTotalAmount = 0;

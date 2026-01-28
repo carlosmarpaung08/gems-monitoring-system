@@ -18,9 +18,16 @@ export default function ProgressChart({ projects, darkMode }) {
     const chartData = projects.map(project => ({
         name: project.project_code,
         progress: parseFloat(project.overall_progress_pct.toFixed(2)),
-        value: project.total_contract_value / 1000000,
+        value: project.total_contract_value,
         fullName: project.project_name
     }));
+
+    const formatValue = (value) => {
+        if (value >= 1_000_000_000_000) return `${(value / 1_000_000_000_000).toFixed(1)}T`;
+        if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}B`;
+        if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
+        return `${(value / 1_000).toFixed(1)}K`;
+    };
 
     // Color gradient based on progress
     const getBarColor = (progress) => {
@@ -63,7 +70,7 @@ export default function ProgressChart({ projects, darkMode }) {
                                 Value:
                             </span>
                             <span className={`text-sm font-bold font-mono ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                                IDR {data.value.toFixed(1)}M
+                                IDR {formatValue(data.value)}
                             </span>
                         </div>
                     </div>
