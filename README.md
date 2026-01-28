@@ -785,17 +785,6 @@ Future enhancements planned:
 
 ---
 
-## 📊 Project Stats
-
-- **Total Components**: 15+ React components
-- **Routes**: 25+ application routes
-- **Database Tables**: 4 main tables + relations
-- **Lines of Code**: ~5000+ lines
-- **Development Time**: 2 weeks
-- **Latest Version**: 1.0.0
-
----
-
 <div align="center">
 
 **⭐ Star this repo if you find it helpful! ⭐**
