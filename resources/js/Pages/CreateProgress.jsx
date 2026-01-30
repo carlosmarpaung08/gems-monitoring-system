@@ -23,6 +23,16 @@ export default function CreateProgress({ boqs, errors: serverErrors }) {
         actual_qty: ''
     });
 
+    const formatValue = (value) => {
+        if (value === null || value === undefined) return '0';
+        const absValue = Math.abs(value);
+        if (absValue >= 1_000_000_000_000) return `${(value / 1_000_000_000_000).toFixed(1).replace(/\.0$/, '')}T`;
+        if (absValue >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1).replace(/\.0$/, '')}B`;
+        if (absValue >= 1_000_000) return `${(value / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
+        if (absValue >= 1_000) return `${(value / 1_000).toFixed(1).replace(/\.0$/, '')}K`;
+        return value.toString();
+    };
+
     const [selectedBoq, setSelectedBoq] = useState(null);
     const [showSuccess, setShowSuccess] = useState(false);
     const [darkMode, setDarkMode] = useState(true);
@@ -42,6 +52,7 @@ export default function CreateProgress({ boqs, errors: serverErrors }) {
         setData('boq_id', boqId);
         
         const boq = boqs.find(b => b.id == boqId);
+    
         setSelectedBoq(boq);
     };
 
@@ -59,15 +70,34 @@ export default function CreateProgress({ boqs, errors: serverErrors }) {
 
     const getRemainingBudget = () => {
         if (!selectedBoq) return 0;
-        const currentProgress = selectedBoq.progress_entries?.reduce((sum, entry) => sum + entry.actual_qty, 0) || 0;
-        return selectedBoq.budget_qty - currentProgress;
+        
+        const budgetQty = parseFloat(selectedBoq.budget_qty) || 0;
+        
+        const progressEntries = selectedBoq.progress_entries || [];
+        const currentProgress = progressEntries.reduce(
+            (sum, entry) => sum + (parseFloat(entry.actual_qty) || 0), 
+            0
+        );
+        
+        return budgetQty - currentProgress;
     };
 
     const getProgressPercentage = () => {
         if (!selectedBoq || !data.actual_qty) return 0;
-        const currentProgress = selectedBoq.progress_entries?.reduce((sum, entry) => sum + entry.actual_qty, 0) || 0;
-        const newTotal = currentProgress + parseFloat(data.actual_qty);
-        return Math.min((newTotal / selectedBoq.budget_qty) * 100, 100);
+        
+        const budgetQty = parseFloat(selectedBoq.budget_qty) || 0;
+        const actualQty = parseFloat(data.actual_qty) || 0;
+        
+        if (budgetQty === 0) return 0;
+        
+        const progressEntries = selectedBoq.progress_entries || [];
+        const currentProgress = progressEntries.reduce(
+            (sum, entry) => sum + (parseFloat(entry.actual_qty) || 0), 
+            0
+        );
+        
+        const newTotal = currentProgress + actualQty;
+        return Math.min((newTotal / budgetQty) * 100, 100);
     };
 
     return (
@@ -214,7 +244,7 @@ export default function CreateProgress({ boqs, errors: serverErrors }) {
                                                     Budget Quantity
                                                 </p>
                                                 <p className={`text-2xl font-bold font-mono ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                                                    {selectedBoq.budget_qty.toLocaleString('id-ID')}
+                                                    {formatValue(selectedBoq.budget_qty)}
                                                 </p>
                                                 <p className={`text-xs mt-1 ${darkMode ? 'text-white/50' : 'text-gray-500'}`}>
                                                     {selectedBoq.uom}
@@ -229,7 +259,7 @@ export default function CreateProgress({ boqs, errors: serverErrors }) {
                                                     Remaining Budget
                                                 </p>
                                                 <p className={`text-2xl font-bold font-mono ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
-                                                    {getRemainingBudget().toLocaleString('id-ID')}
+                                                    {formatValue(getRemainingBudget())}
                                                 </p>
                                                 <p className={`text-xs mt-1 ${darkMode ? 'text-white/50' : 'text-gray-500'}`}>
                                                     {selectedBoq.uom}
@@ -244,7 +274,7 @@ export default function CreateProgress({ boqs, errors: serverErrors }) {
                                                     Unit Rate
                                                 </p>
                                                 <p className={`text-2xl font-bold font-mono ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                                                    {(selectedBoq.unit_rate / 1000).toFixed(0)}K
+                                                    {formatValue(selectedBoq.unit_rate)}
                                                 </p>
                                                 <p className={`text-xs mt-1 ${darkMode ? 'text-white/50' : 'text-gray-500'}`}>
                                                     IDR per {selectedBoq.uom}

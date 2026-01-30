@@ -13,7 +13,7 @@ class ProjectSeeder extends Seeder
     public function run(): void
     {
         /**
-         * PROJECT 1 - On Track (±1.2M)
+         * PROJECT 1 - On Track
          */
         $project1 = Project::create([
             'project_code' => 'PRJ-GEMS-001',
@@ -62,7 +62,7 @@ class ProjectSeeder extends Seeder
         ]);
 
         /**
-         * PROJECT 2 - Stabil (±900K)
+         * PROJECT 2 - Stabil
          */
         $project2 = Project::create([
             'project_code' => 'PRJ-GEMS-002',
@@ -97,7 +97,7 @@ class ProjectSeeder extends Seeder
         ]);
 
         /**
-         * PROJECT 3 - At Risk (±700K)
+         * PROJECT 3 - At Risk
          */
         $project3 = Project::create([
             'project_code' => 'PRJ-GEMS-003',
@@ -132,7 +132,7 @@ class ProjectSeeder extends Seeder
         ]);
 
         /**
-         * PROJECT 4 - Completed (±500K)
+         * PROJECT 4 - Completed
          */
         $project4 = Project::create([
             'project_code' => 'PRJ-GEMS-004',
